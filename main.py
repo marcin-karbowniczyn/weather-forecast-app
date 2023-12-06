@@ -3,8 +3,7 @@ import streamlit as st
 import plotly.express as px
 from backend import get_data
 
-st.write(st.session_state)
-
+# 1. Add title, text input, slider, selectbox and subheader
 st.title('Weather Forecast for the Next Days')
 place = st.text_input('Place:', key='place_input')
 
@@ -18,13 +17,23 @@ option = st.selectbox('Select the data to view',
                       options=('Temperature', 'Sky'),
                       key='selectbox')
 
-get_data(place, days, option)
-
 if place:
-    st.subheader(f'{option} for the next {days} days in {place}')
+    # 2. Get the data after place is provided by the user
+    data = get_data(place, days)
 
-    dates = ['2022-25-10', '2022-26-10', '2022-27-10']
-    temperatures = [10, 11, 15]
-    # px.line creates a graph/plot, which we use in st.plotly_chart to display on a webpage
-    figure = px.line(x=dates, y=temperatures, labels={'x': 'Date', 'y': 'Temperature'})
-    st.plotly_chart(figure)
+    # 2a. Display chart if temperatures
+    if option == 'Temperature':
+        st.subheader(f'{option} for the next {days} days in {place}')
+
+        temperatures = [el['main']['temp'] for el in data]
+        dates = [el['dt_txt'] for el in data]
+
+        # px.line creates a graph/plot, which we use in st.plotly_chart to display on a webpage
+        figure = px.line(x=dates, y=temperatures, labels={'x': 'Date', 'y': 'Temperature'})
+        st.plotly_chart(figure)
+
+    elif option == 'Sky':
+        st.subheader(f'{option} for the next {days} days in {place}')
+        sky_conditions = [el['weather'][0]['main'] for el in data]
+        images = [f"images/{el.lower()}.png" for el in sky_conditions]
+        st.image(images, width=115)
