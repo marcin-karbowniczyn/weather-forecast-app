@@ -6,11 +6,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# print(datetime.datetime.now().timestamp())
-
-
 def get_data(place, forecast_days):
-    url = f"http://api.openweathermap.org/data/2.5/forecast?q={place}&appid={os.getenv('API_KEY')}"
+    units = 'metric'
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={place}&appid={os.getenv('API_KEY')}&units={units}"
     r = requests.get(url)
     data = r.json()
     num_of_values = 8 * forecast_days
